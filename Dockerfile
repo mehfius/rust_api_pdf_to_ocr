@@ -1,10 +1,8 @@
-#FROM debian:bookworm-slim
 FROM debian:bullseye-slim
-RUN apt-get update && apt-get install -y \
-    tesseract-ocr \
-    tesseract-ocr-por \
-    libssl1.1 \
-    && rm -rf /var/lib/apt/lists/*
+
+RUN echo "Verificando pacotes instalados:" \
+    && dpkg -l | grep -E 'ca-certificates|libssl1.1|tesseract-ocr' || echo "Algum pacote não encontrado" \
+    && ldd --version | head -n 1
 
 COPY target/release/rust_api_pdf_to_ocr /usr/local/bin/
 
