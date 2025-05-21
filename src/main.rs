@@ -7,6 +7,7 @@ use serde_json::json;
 use reqwest::Client;
 use std::io::Cursor;
 use image::{DynamicImage, ImageFormat};
+use std::env;
 
 #[derive(Deserialize)]
 struct PdfInput {
@@ -110,9 +111,10 @@ async fn convert_pdf(input: Option<web::Json<PdfInput>>) -> HttpResponse {
         // Codifica a imagem em Base64
         let base64 = general_purpose::STANDARD.encode(buffer.into_inner());
 
-        // Envia a imagem base64 para o endpoint OCR
+        let base_url = env::var("URL").unwrap_or_else(|_| "http://0.0.0.0:5000/ocr".to_string());
+
         let ocr_response = match client
-            .post("http://0.0.0.0:5000/ocr")
+            .post(base_url)
             .json(&json!({ "base64": base64 }))
             .send()
             .await
